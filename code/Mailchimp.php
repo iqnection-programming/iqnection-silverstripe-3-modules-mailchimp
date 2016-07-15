@@ -14,7 +14,8 @@ require_once dirname(__FILE__).'/../vendor/Mailchimp/Reports.php';
 require_once dirname(__FILE__).'/../vendor/Mailchimp/Gallery.php';
 require_once dirname(__FILE__).'/../vendor/Mailchimp/Exceptions.php';
 
-class Mailchimp {
+class Mailchimp
+{
 
     /**
      * Placeholder attribute for Mailchimp_Folders class
@@ -22,84 +23,84 @@ class Mailchimp {
      * @var Mailchimp_Folders
      * @access public
      */
-    var $folders;
+    public $folders;
     /**
      * Placeholder attribute for Mailchimp_Templates class
      *
      * @var Mailchimp_Templates
      * @access public
      */
-    var $templates;
+    public $templates;
     /**
      * Placeholder attribute for Mailchimp_Users class
      *
      * @var Mailchimp_Users
      * @access public
      */
-    var $users;
+    public $users;
     /**
      * Placeholder attribute for Mailchimp_Helper class
      *
      * @var Mailchimp_Helper
      * @access public
      */
-    var $helper;
+    public $helper;
     /**
      * Placeholder attribute for Mailchimp_Mobile class
      *
      * @var Mailchimp_Mobile
      * @access public
      */
-    var $mobile;
+    public $mobile;
     /**
      * Placeholder attribute for Mailchimp_Ecomm class
      *
      * @var Mailchimp_Ecomm
      * @access public
      */
-    var $ecomm;
+    public $ecomm;
     /**
      * Placeholder attribute for Mailchimp_Neapolitan class
      *
      * @var Mailchimp_Neapolitan
      * @access public
      */
-    var $neapolitan;
+    public $neapolitan;
     /**
      * Placeholder attribute for Mailchimp_Lists class
      *
      * @var Mailchimp_Lists
      * @access public
      */
-    var $lists;
+    public $lists;
     /**
      * Placeholder attribute for Mailchimp_Campaigns class
      *
      * @var Mailchimp_Campaigns
      * @access public
      */
-    var $campaigns;
+    public $campaigns;
     /**
      * Placeholder attribute for Mailchimp_Vip class
      *
      * @var Mailchimp_Vip
      * @access public
      */
-    var $vip;
+    public $vip;
     /**
      * Placeholder attribute for Mailchimp_Reports class
      *
      * @var Mailchimp_Reports
      * @access public
      */
-    var $reports;
+    public $reports;
     /**
      * Placeholder attribute for Mailchimp_Gallery class
      *
      * @var Mailchimp_Gallery
      * @access public
      */
-    var $gallery;
+    public $gallery;
 
     /**
      * CURLOPT_SSL_VERIFYPEER setting
@@ -220,31 +221,38 @@ class Mailchimp {
         "MC_SearchException" => "Mailchimp_MC_SearchException"
     );
 
-    public function __construct($apikey=null, $opts=array()) {
-        if(!$apikey) $apikey = $this->readConfigs();
-        if(!$apikey) throw new Mailchimp_Error('You must provide a MailChimp API key');
+    public function __construct($apikey=null, $opts=array())
+    {
+        if (!$apikey) {
+            $apikey = $this->readConfigs();
+        }
+        if (!$apikey) {
+            throw new Mailchimp_Error('You must provide a MailChimp API key');
+        }
         $this->apikey = $apikey;
         $dc = "us1";
-        if (strstr($this->apikey,"-")){
-            list($key, $dc) = explode("-",$this->apikey,2);
-            if (!$dc) $dc = "us1";
+        if (strstr($this->apikey, "-")) {
+            list($key, $dc) = explode("-", $this->apikey, 2);
+            if (!$dc) {
+                $dc = "us1";
+            }
         }
         $this->root = str_replace('https://api', 'https://'.$dc.'.api', $this->root);
         $this->root = rtrim($this->root, '/') . '/';
 
-        if (!isset($opts['timeout']) || !is_int($opts['timeout'])){
+        if (!isset($opts['timeout']) || !is_int($opts['timeout'])) {
             $opts['timeout']=600;
         }
-        if (isset($opts['debug'])){
+        if (isset($opts['debug'])) {
             $this->debug = true;
         }
-        if (isset($opts['ssl_verifypeer'])){
+        if (isset($opts['ssl_verifypeer'])) {
             $this->ssl_verifypeer = $opts['ssl_verifypeer'];
         }
-        if (isset($opts['ssl_verifyhost'])){
+        if (isset($opts['ssl_verifyhost'])) {
             $this->ssl_verifyhost = $opts['ssl_verifyhost'];
         }
-        if (isset($opts['ssl_cainfo'])){
+        if (isset($opts['ssl_cainfo'])) {
             $this->ssl_cainfo = $opts['ssl_cainfo'];
         }
 
@@ -273,11 +281,13 @@ class Mailchimp {
         $this->gallery = new Mailchimp_Gallery($this);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         curl_close($this->ch);
     }
 
-    public function call($url, $params) {
+    public function call($url, $params)
+    {
         $params['apikey'] = $this->apikey;
         $params = json_encode($params);
         $ch = $this->ch;
@@ -289,11 +299,13 @@ class Mailchimp {
         // SSL Options
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->ssl_verifypeer);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $this->ssl_verifyhost);
-        if ($this->ssl_cainfo) curl_setopt($ch, CURLOPT_CAINFO, $this->ssl_cainfo);
+        if ($this->ssl_cainfo) {
+            curl_setopt($ch, CURLOPT_CAINFO, $this->ssl_cainfo);
+        }
 
         $start = microtime(true);
         $this->log('Call to ' . $this->root . $url . '.json: ' . $params);
-        if($this->debug) {
+        if ($this->debug) {
             $curl_buffer = fopen('php://memory', 'w+');
             curl_setopt($ch, CURLOPT_STDERR, $curl_buffer);
         }
@@ -301,7 +313,7 @@ class Mailchimp {
         $response_body = curl_exec($ch);
         $info = curl_getinfo($ch);
         $time = microtime(true) - $start;
-        if($this->debug) {
+        if ($this->debug) {
             rewind($curl_buffer);
             $this->log(stream_get_contents($curl_buffer));
             fclose($curl_buffer);
@@ -309,39 +321,46 @@ class Mailchimp {
         $this->log('Completed in ' . number_format($time * 1000, 2) . 'ms');
         $this->log('Got response: ' . $response_body);
 
-        if(curl_error($ch)) {
+        if (curl_error($ch)) {
             throw new Mailchimp_HttpError("API call to $url failed: " . curl_error($ch));
         }
         $result = json_decode($response_body, true);
         
-        if(floor($info['http_code'] / 100) >= 4) {
+        if (floor($info['http_code'] / 100) >= 4) {
             throw $this->castError($result);
         }
 
         return $result;
     }
 
-    public function readConfigs() {
+    public function readConfigs()
+    {
         $paths = array('~/.mailchimp.key', '/etc/mailchimp.key');
-        foreach($paths as $path) {
-            if(file_exists($path)) {
+        foreach ($paths as $path) {
+            if (file_exists($path)) {
                 $apikey = trim(file_get_contents($path));
-                if($apikey) return $apikey;
+                if ($apikey) {
+                    return $apikey;
+                }
             }
         }
         return false;
     }
 
-    public function castError($result) {
-        if($result['status'] !== 'error' || !$result['name']) throw new Mailchimp_Error('We received an unexpected error: ' . json_encode($result));
+    public function castError($result)
+    {
+        if ($result['status'] !== 'error' || !$result['name']) {
+            throw new Mailchimp_Error('We received an unexpected error: ' . json_encode($result));
+        }
 
         $class = (isset(self::$error_map[$result['name']])) ? self::$error_map[$result['name']] : 'Mailchimp_Error';
         return new $class($result['error'], $result['code']);
     }
 
-    public function log($msg) {
-        if($this->debug) error_log($msg);
+    public function log($msg)
+    {
+        if ($this->debug) {
+            error_log($msg);
+        }
     }
 }
-
-
