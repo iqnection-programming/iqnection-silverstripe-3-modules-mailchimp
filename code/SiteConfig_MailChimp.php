@@ -10,10 +10,8 @@
                 
         public function updateCMSFields(FieldList $fields)
         {
-            // only admins can modify these fields
-            if (Permission::check('ADMIN')) {
-                $fields->addFieldToTab('Root.MailChimp', new TextField('MailchimpApiKey', 'MailChimp API Key'));
-                $fields->addFieldToTab('Root.MailChimp', new TextField('MailchimpListId', 'MailChimp List ID'));
-            }
+            $tab = $fields->findOrMakeTab('Root.Developer.MailChimp');
+			$tab->push( new TextField('MailchimpApiKey', 'MailChimp API Key'));
+			$tab->push( new TextField('MailchimpListId', 'MailChimp List ID'));
         }
     }
