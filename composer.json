@@ -1,19 +1,22 @@
 {
-	"name": "iqnection-pages/mailchimp",
-	"description": "SilverStripe 3 MailChimp Integration",
-	"type": "silverstripe-module",
-	"keywords": ["iqnection","pages"],
+	"name": "iqnection-modules/mailchimp",
+	"description": "SilverStripe Mailchimp Integration",
+	"type": "silverstripe-vendormodule",
+	"keywords": ["iqnection","modules","mailchimp"],
+	"license": "BSD-3-Clause",
 	"authors": [
 		{
 			"name": "IQnection",
-            "homepage": "http://www.iqnection.com"
+            "homepage": "https://www.iqnection.com"
 		}
 	],
 	"require": {
-		"silverstripe/framework": ">=3.0",
-		"iqnection-pages/basepages":"*"
+		"silverstripe/framework": "^4.1",
+		"drewm/mailchimp-api": "^2.5"
 	},
-	"extra": {
-		"installer-name": "iq-mailchimp"
+	"autoload": {
+		"psr-4": {
+			"IQnection\\Mailchimp\\": "app/src/"
+		}
 	}
 }

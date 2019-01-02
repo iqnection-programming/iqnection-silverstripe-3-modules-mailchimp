@@ -1,3 +1,19 @@
-SiteConfig:
+---
+Name: iqmailchimp
+---
+SilverStripe\SiteConfig\SiteConfig:
   extensions:
-    - SiteConfig_MailChimp
+    - IQnection\Mailchimp\SiteConfig\SiteConfig
+---
+Only:
+  classexists: 
+    - IQnection\FormPage\FormPage
+    - IQnection\FormPage\Model\FormPageSubmission
+---
+IQnection\FormPage\FormPage:
+  extensions:
+    - IQnection\Mailchimp\FormPage\FormPage
+IQnection\FormPage\Model\FormPageSubmission:
+  extensions:
+    - IQnection\Mailchimp\FormPage\Model\FormPageSubmission
+---
